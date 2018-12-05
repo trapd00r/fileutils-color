@@ -1,0 +1,145 @@
+#!/usr/bin/perl
+# vim:ft=perl:fdm=marker:fmr=#<,#>:fen:et:sw=2:
+use strict;
+use warnings FATAL => 'all';
+use autodie  qw(:all);
+
+use Getopt::Long;
+use File::LsColor qw(ls_color get_ls_colors);
+use File::Path qw(rmtree);
+
+Getopt::Long::Configure("bundling"); # enable -rv etc
+
+#< begin usage
+sub usage {
+  pod2usage(
+    msg     => "rmc v0.01\n",
+    verbose => 1,
+    exitval => 0,
+  );
+}
+
+BEGIN {
+  use Pod::Usage;
+  if( (!@ARGV) or ($ARGV[0] =~ m/--?h(?:elp)?\z/) ) {
+    usage();
+    exit;
+  }
+}
+#>
+
+my($opt_recursive, $opt_verbose) = 0;
+
+GetOptions(
+  'r|recursive'       => \$opt_recursive,
+  'v|verbose'         => \$opt_verbose,
+
+  'h|help'               => \&usage,
+  'm|man'                  => sub { pod2usage( verbose => 3 ); },
+);
+
+
+
+my @files = @ARGV;
+
+# lookup color/attribute for dir, links etc
+my $ls_colors = get_ls_colors();
+
+rm(@files);
+
+
+sub rm {
+  my @files = @_;
+  for my $file(@files) {
+    if(-d $file) {
+      if($opt_recursive) {
+        rmtree($file, { verbose => 0, result => \my $list });
+
+        if($opt_verbose) {
+          printf("removed directory '%s%s\033[m'\n", _color_attr('di'), $_) for @$list;
+        }
+        next;
+      }
+      else {
+#        warn "$0: cannot remove '$file': Is a directory\n";
+        next;
+      }
+    }
+
+    # is not a directory
+
+    if(unlink($file)) {
+      printf("removed '%s'\n", ls_color($file));
+    }
+    else {
+      warn("Could not unlink '$file': $!\n");
+    }
+  }
+}
+
+
+sub _color_attr {
+  my $what = shift;
+  return "\033[" . $ls_colors->{$what} . 'm';
+}
+
+
+
+
+
+__END__
+
+
+=pod
+
+=head1 NAME
+
+rmc - remove files or directories - with color
+
+=head1 USAGE
+
+    rmc [OPTION]... [FILE]...
+
+=head1 DESCRIPTION
+
+=head1 OPTIONS
+
+  -r, --recursive     remove directories and their contents recursively
+  -v, --verbose       explain what is being done
+
+  -h, --help          display this help and exit
+  -m, --man           display the manual
+
+
+=head1 REPORTING BUGS
+
+Report bugs and/or feature requests on rt.cpan.org, the repository issue tracker
+or directly to L<m@japh.se>
+
+=head1 AUTHOR
+
+  Magnus Woldrich
+  CPAN ID: WOLDRICH
+  m@japh.se
+  http://japh.se
+  http://github.com/trapd00r
+
+=head1 CONTRIBUTORS
+
+None required yet.
+
+=head1 COPYRIGHT
+
+Copyright 2018 B<THIS APPLICATION>s L</AUTHOR> and L</CONTRIBUTORS> as listed
+above.
+
+=head1 LICENSE
+
+This program is free software; you can redistribute it and/or modify
+it under the same terms as Perl itself.
+
+=head1 SEE ALSO
+
+L<~/|http://japh.se>
+
+=cut
