@@ -10,6 +10,9 @@ use File::Path qw(rmtree);
 
 Getopt::Long::Configure("bundling"); # enable -rv etc
 
+
+our $VERSION = '0.36';
+
 #< begin usage
 sub usage {
   pod2usage(
@@ -69,7 +72,7 @@ sub rm {
     # is not a directory
 
     if(unlink($file)) {
-      printf("removed '%s'\n", ls_color($file));
+      printf("removed '%s'\n", ls_color($file)) if $opt_verbose;
     }
     else {
       warn("Could not unlink '$file': $!\n");
