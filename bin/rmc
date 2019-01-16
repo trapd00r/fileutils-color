@@ -11,7 +11,7 @@ use File::Path qw(rmtree);
 Getopt::Long::Configure("bundling"); # enable -rv etc
 
 
-our $VERSION = '0.36';
+our $VERSION = '0.38';
 
 #< begin usage
 sub usage {
@@ -59,7 +59,7 @@ sub rm {
         rmtree($file, { verbose => 0, result => \my $list });
 
         if($opt_verbose) {
-          printf("removed directory '%s%s\033[m'\n", _color_attr('di'), $_) for @$list;
+          printf("removed directory '%s%s\033[m'\n", _color_attr('di'), $file);
         }
         next;
       }
