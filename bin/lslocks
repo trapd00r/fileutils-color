@@ -1,0 +1,22 @@
+#!/usr/bin/perl
+# vim: ft=perl:fdm=marker:fmr=#<,#>:fen:et:sw=2:
+use strict;
+use warnings FATAL => 'all';
+use vars     qw($VERSION);
+use autodie  qw(:all);
+
+my $APP  = 'lslocks';
+$VERSION = '0.001';
+
+use File::LsColor qw(ls_color);
+
+my %files;
+open(my $popen, '-|', '/bin/lslocks', '-oPATH,COMMAND');
+while(<$popen>) {
+  m{^(/\S+)\s+(.+)$} and $files{$1} = $2;
+}
+
+
+for my $f(sort(keys(%files))) {
+  printf "% 12s %s\n", $files{$f}, ls_color($f);
+}

@@ -9,6 +9,10 @@ Just a few file-managing utilities with some color.
 
 ![image](/extra/rmc.png)
 
+* lslocks with [ls_colors](https://github.com/trapd00r/LS_COLORS)
+
+![image](/extra/lslocks.png)
+
 
 
 See also
