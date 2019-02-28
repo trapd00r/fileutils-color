@@ -11,12 +11,12 @@ $VERSION = '0.001';
 use File::LsColor qw(ls_color);
 
 my %files;
-open(my $popen, '-|', '/bin/lslocks', '-oPATH,COMMAND');
+open(my $popen, '-|', '/bin/lslocks', '-oCOMMAND,PATH');
 while(<$popen>) {
-  m{^(/\S+)\s+(.+)$} and $files{$1} = $2;
+  m{^(\S+)\s+(/.+)$} and $files{$1} = $2;
 }
 
 
 for my $f(sort(keys(%files))) {
-  printf "% 12s %s\n", $files{$f}, ls_color($f);
+  printf "% 20s %s\n", $f, ls_color($files{$f});
 }
